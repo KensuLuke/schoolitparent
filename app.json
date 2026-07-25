@@ -26,6 +26,13 @@
       "expo-font",
       "expo-splash-screen",
       "expo-status-bar"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b3989921-0ad0-48c0-a8d9-49240b83d3c9"
+      }
+    },
+    "owner": "lukekensu"
   }
 }

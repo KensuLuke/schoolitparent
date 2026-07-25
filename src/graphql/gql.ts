@@ -173,3 +173,96 @@ export const ACKNOWLEDGE_REPORT = gql`
     }
   }
 `;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NOTIFICATIONS — see server/graphQl/queries/notificationResolvers.js (list/
+// unread-count/mark-read) and server/graphQl/mutations/notificationMutation.js
+// (Expo push token register/unregister). Recipient scoping happens
+// server-side from the auth token — this app never passes a recipientId.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const GET_NOTIFICATIONS = gql`
+  query GetNotifications($input: NotificationQueryInput!) {
+    notifications(input: $input) {
+      items {
+        id
+        title
+        message
+        type
+        channel
+        isRead
+        entity
+        createdAt
+      }
+      total
+      page
+      limit
+      hasMore
+      cursor
+    }
+  }
+`;
+
+export const GET_UNREAD_NOTIFICATION_COUNT = gql`
+  query GetUnreadNotificationCount {
+    unreadNotificationCount
+  }
+`;
+
+export const MARK_NOTIFICATION_READ = gql`
+  mutation MarkNotificationRead($id: ID!) {
+    markNotificationRead(id: $id) {
+      id
+      isRead
+    }
+  }
+`;
+
+export const MARK_ALL_NOTIFICATIONS_READ = gql`
+  mutation MarkAllNotificationsRead {
+    markAllNotificationsRead
+  }
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PUSH — Expo push token registration (see notificationMutation.js).
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const REGISTER_EXPO_PUSH_TOKEN = gql`
+  mutation RegisterExpoPushToken($token: String!) {
+    registerExpoPushToken(token: $token) {
+      success
+      message
+    }
+  }
+`;
+
+export const UNREGISTER_EXPO_PUSH_TOKEN = gql`
+  mutation UnregisterExpoPushToken($token: String!) {
+    unregisterExpoPushToken(token: $token) {
+      success
+      message
+    }
+  }
+`;
+
+// Delivered over the graphql-ws WS connection set up in graphql/client.ts.
+// $recipientId is sent for schema compat only — the server IGNORES it and
+// derives the channel from the authenticated connection itself (see
+// graphQl/queries/schemeOfWorkNotifications.js's notificationCreated
+// resolver), so there's no client-controllable way to see anyone else's
+// notifications.
+export const NOTIFICATION_CREATED = gql`
+  subscription OnNotificationCreated {
+    notificationCreated(recipientId: "self") {
+      id
+      title
+      message
+      type
+      channel
+      isRead
+      entity
+      createdAt
+    }
+  }
+`;

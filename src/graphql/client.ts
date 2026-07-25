@@ -8,15 +8,36 @@
  * network blips.
  */
 
-import { createClient, fetchExchange, mapExchange, type Operation } from "urql";
+import {
+  createClient,
+  fetchExchange,
+  mapExchange,
+  subscriptionExchange,
+  type Operation,
+} from "urql";
 import { authExchange } from "@urql/exchange-auth";
 import { retryExchange } from "@urql/exchange-retry";
+import { createClient as createWSClient } from "graphql-ws";
 import { SecureStore } from "@/storage/storage";
 import { useAuthStore } from "@/stores/stores";
 
 const SERVER_URL = process.env.EXPO_PUBLIC_SERVER ?? "http://localhost:5001";
+const WS_URL = SERVER_URL.replace(/^http/, "ws") + "/graphql";
 
 function buildClient() {
+  // Carries its own auth via connectionParams (read lazily, same as the
+  // HTTP token below) — matches server/auth.js's authenticateSub(), which
+  // reads ctx.connectionParams.authorization.
+  const wsClient = createWSClient({
+    url: WS_URL,
+    connectionParams: () => {
+      const token = SecureStore.getToken();
+      return token ? { authorization: `Bearer ${token}` } : {};
+    },
+    retryAttempts: Infinity,
+    shouldRetry: () => true,
+  });
+
   return createClient({
     url: `${SERVER_URL}/graphql`,
 
@@ -79,6 +100,18 @@ function buildClient() {
         maxNumberAttempts: 3,
         randomDelay: true,
         retryIf: (error) => !!error.networkError,
+      }),
+
+      subscriptionExchange({
+        forwardSubscription(request) {
+          const input = { ...request, query: request.query || "" };
+          return {
+            subscribe(sink) {
+              const unsubscribe = wsClient.subscribe(input, sink);
+              return { unsubscribe };
+            },
+          };
+        },
       }),
 
       fetchExchange,

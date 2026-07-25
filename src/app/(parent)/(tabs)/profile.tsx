@@ -1,19 +1,31 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
 import Ionicons from "@react-native-vector-icons/ionicons";
+import { useMutation } from "urql";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import Card from "@/components/Card";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAuthStore, useParentStore } from "@/stores/stores";
 import { routes } from "@/constants/routes";
+import { UNREGISTER_EXPO_PUSH_TOKEN } from "@/graphql/gql";
+import { getExpoPushToken } from "@/utils/pushToken";
 
 export default function ProfileScreen() {
   const { background, primary, mutedText, cardBackground, error: errorColor } = useThemeColor();
   const { profile } = useParentStore();
   const { completeLogout } = useAuthStore();
+  const [, unregisterPushToken] = useMutation(UNREGISTER_EXPO_PUSH_TOKEN);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Best-effort — a shared/reset device shouldn't keep receiving this
+    // parent's pushes after they've logged out. Never block logout on it.
+    try {
+      const token = await getExpoPushToken();
+      if (token) await unregisterPushToken({ token });
+    } catch {
+      // ignore — logging out matters more than a clean token unregister
+    }
     completeLogout();
     router.replace(routes.login);
   };

@@ -18,6 +18,7 @@ import { hydrateStorage } from "@/storage/storage";
 import { useAuthStore, useAppStore } from "@/stores/stores";
 import { routes, getHomeRoute } from "@/constants/routes";
 import { getClient } from "@/graphql/client";
+import { usePushRegistration } from "@/hooks/usePushRegistration";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -28,6 +29,8 @@ function RootLayoutNav() {
 
   const { isAuthenticated, isInitializing, initialize } = useAuthStore();
   const { theme, initialize: initApp } = useAppStore();
+
+  usePushRegistration();
 
   useEffect(() => {
     hydrateStorage().then(() => {

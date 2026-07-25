@@ -183,6 +183,39 @@ export interface AcknowledgmentResult {
   parentRating?: number | null;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// NOTIFICATIONS — mirrors server/models/Notification.js. recipient/entity are
+// opaque JSON on the server (DynamicRef) — entity is typed loosely here since
+// its shape depends on entity.model (WeeklyReport/Announcement/Attendance/...).
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type NotificationType = "INFO" | "REMINDER" | "ALERT";
+
+export interface NotificationEntityRef {
+  id: string;
+  model: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title?: string;
+  message?: string;
+  type?: NotificationType;
+  channel?: string[];
+  isRead: boolean;
+  entity?: NotificationEntityRef | null;
+  createdAt: string;
+}
+
+export interface NotificationPageResult {
+  items: AppNotification[];
+  total: number;
+  page: number;
+  limit: number;
+  hasMore: boolean;
+  cursor?: string | null;
+}
+
 export interface PersistedSession {
   token: string;
   parentId: string;

@@ -27,6 +27,7 @@ export const routes = {
   parentHome: "/(parent)/(tabs)" as Href,
   parentReports: "/(parent)/(tabs)/reports" as Href,
   parentAnnouncements: "/(parent)/(tabs)/announcements" as Href,
+  parentNotifications: "/(parent)/(tabs)/notifications" as Href,
   parentProfile: "/(parent)/(tabs)/profile" as Href,
 } as const;
 
