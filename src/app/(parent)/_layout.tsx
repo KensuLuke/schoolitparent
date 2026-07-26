@@ -14,6 +14,7 @@ export default function ParentLayout() {
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="child/[studentId]" options={{ headerShown: true, title: "Child" }} />
       <Stack.Screen name="report/[reportId]" options={{ headerShown: true, title: "Report" }} />
+      <Stack.Screen name="social/[postId]" options={{ headerShown: true, title: "Post" }} />
     </Stack>
   );
 }

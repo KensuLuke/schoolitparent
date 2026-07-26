@@ -5,7 +5,7 @@
  * staff/admin switch), every parent account is the same role.
  */
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   TextInput,
   TouchableOpacity,
@@ -27,31 +27,27 @@ import { ThemedText } from "@/components/ThemedText";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { PARENT_LOGIN } from "@/graphql/gql";
 
+// Storage is already hydrated to an in-memory cache by the time this screen
+// mounts (see hydrateStorage() gating the root layout), so these are
+// synchronous reads — safe to call directly from useState's lazy
+// initializer instead of restoring saved credentials via an effect.
+function savedCredentials() {
+  return AppStore.getRememberMe() ? SecureStore.getCredentials() : null;
+}
+
 export default function LoginScreen() {
   const { primary, background, border, text, mutedText, cardBackground, error: errorColor } =
     useThemeColor();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [email, setEmail] = useState(() => savedCredentials()?.email ?? "");
+  const [password, setPassword] = useState(() => savedCredentials()?.password ?? "");
+  const [rememberMe, setRememberMe] = useState(() => AppStore.getRememberMe());
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuthStore();
   const { setProfile } = useParentStore();
 
   const [{ fetching, error: mutationError }, parentLoginMutation] = useMutation(PARENT_LOGIN);
-
-  useEffect(() => {
-    const savedRememberMe = AppStore.getRememberMe();
-    setRememberMe(savedRememberMe);
-    if (savedRememberMe) {
-      const credentials = SecureStore.getCredentials();
-      if (credentials) {
-        setEmail(credentials.email);
-        setPassword(credentials.password);
-      }
-    }
-  }, []);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
@@ -205,7 +201,7 @@ export default function LoginScreen() {
           <ThemedView style={[styles.helpCard, { backgroundColor: cardBackground }]}>
             <Ionicons name="help-circle-outline" size={22} color={mutedText} />
             <ThemedText type="muted" style={styles.helpText}>
-              Don't have login credentials?{"\n"}Contact your child's school.
+              Don&apos;t have login credentials?{"\n"}Contact your child&apos;s school.
             </ThemedText>
           </ThemedView>
         </ThemedView>

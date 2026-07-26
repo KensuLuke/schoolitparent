@@ -101,7 +101,7 @@ export default function ChildrenScreen() {
       {showLinkForm && (
         <ThemedView style={[styles.linkForm, { backgroundColor: cardBackground, borderColor: border }]}>
           <ThemedText type="small" style={{ color: mutedText, marginBottom: 8 }}>
-            Enter your child's Student ID (from the school) to request a link. The
+            Enter your child&apos;s Student ID (from the school) to request a link. The
             school must verify it before you can see their data.
           </ThemedText>
           <TextInput
@@ -125,7 +125,7 @@ export default function ChildrenScreen() {
 
       {error && (
         <ThemedText type="small" style={{ color: mutedText, padding: 16 }}>
-          Couldn't load your children. Pull to refresh.
+          Couldn&apos;t load your children. Pull to refresh.
         </ThemedText>
       )}
 

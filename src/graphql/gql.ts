@@ -266,3 +266,95 @@ export const NOTIFICATION_CREATED = gql`
     }
   }
 `;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHOOLIT SOCIAL — mirrors server/graphQl/typeDefs/socialPostTypedefs.js.
+// Explore tab feed only — browse, react, vote. This app never authors posts
+// (see mobile/admin's staff/admin-only authoring screen instead).
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SOCIAL_POST_FIELDS = `
+  id
+  title
+  description
+  type
+  customTypeLabel
+  isPublic
+  isPublished
+  status
+  startDate
+  endDate
+  location
+  coverImage
+  reactionCount
+  viewerHasReacted
+  isBoosted
+  boostExpiresAt
+  updates {
+    id
+    media
+    caption
+    postedAt
+    statusAtPost
+  }
+  voteSessions {
+    id
+    title
+    status
+    duration { start end }
+    nominees { id nominee voteCount isDisqualified }
+  }
+  school { id name }
+  createdAt
+`;
+
+export const SOCIAL_POST_FEED = gql`
+  query SocialPostFeed($input: SocialPostFeedInput!) {
+    socialPostFeed(input: $input) {
+      items {
+        kind
+        tier
+        event { id title image }
+        post { ${SOCIAL_POST_FIELDS} }
+      }
+      total
+      page
+      limit
+    }
+  }
+`;
+
+export const SOCIAL_POST = gql`
+  query SocialPostDetail($id: ID!) {
+    socialPost(id: $id) { ${SOCIAL_POST_FIELDS} }
+  }
+`;
+
+export const REACT_TO_SOCIAL_POST = gql`
+  mutation ReactToSocialPost($input: ReactToSocialPostInput!) {
+    reactToSocialPost(input: $input) {
+      id
+      reactionCount
+      viewerHasReacted
+    }
+  }
+`;
+
+export const CAST_SOCIAL_VOTE = gql`
+  mutation CastSocialVote($input: CastVoteInput!) {
+    castVote(input: $input) {
+      id
+      nominees {
+        id
+        nominee
+        voteCount
+      }
+    }
+  }
+`;
+
+export const SOCIAL_POST_UPDATED = gql`
+  subscription OnSocialPostUpdated($postId: ID!) {
+    socialPostUpdated(postId: $postId) { ${SOCIAL_POST_FIELDS} }
+  }
+`;

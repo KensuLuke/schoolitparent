@@ -23,6 +23,13 @@ export default function ParentTabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="explore"
+        options={{
+          title: "Explore",
+          tabBarIcon: ({ color, size }) => <Ionicons name="compass-outline" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="reports"
         options={{
           title: "Reports",

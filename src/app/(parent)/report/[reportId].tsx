@@ -68,7 +68,7 @@ export default function ReportAcknowledgeScreen() {
         Acknowledge this report
       </ThemedText>
       <ThemedText type="small" style={{ color: mutedText, marginBottom: 20 }}>
-        Once acknowledged, this can't be changed — take a moment to review the
+        Once acknowledged, this can&apos;t be changed — take a moment to review the
         report before submitting.
       </ThemedText>
 

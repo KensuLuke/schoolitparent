@@ -23,7 +23,7 @@ export default function NotFoundScreen() {
           Page Not Found
         </ThemedText>
         <ThemedText type="muted" style={[styles.description, { color: mutedText }]}>
-          The screen you're looking for doesn't exist or may have been moved.
+          The screen you&apos;re looking for doesn&apos;t exist or may have been moved.
         </ThemedText>
 
         <TouchableOpacity

@@ -144,6 +144,81 @@ export interface AnnouncementRecord {
   createdAt?: string | null;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// SCHOOLIT SOCIAL — mirrors server/graphQl/typeDefs/socialPostTypedefs.js.
+// Explore tab feed only (browse/react/vote) — this app never authors posts.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type FeedTab = "FOR_YOU" | "RECOMMENDED";
+export type FeedEntryKind = "INTERNAL_EVENT" | "SOCIAL_POST";
+
+export interface SocialPostUpdateItem {
+  id: string;
+  media: string;
+  caption?: string | null;
+  postedAt: string;
+  statusAtPost?: string | null;
+}
+
+export interface SocialPostVoteNominee {
+  id: string;
+  nominee: unknown;
+  voteCount: number;
+  isDisqualified: boolean;
+}
+
+export interface SocialPostVoteSession {
+  id: string;
+  title?: string | null;
+  status: string;
+  duration: { start: string; end?: string | null };
+  nominees: SocialPostVoteNominee[];
+}
+
+export interface SocialPost {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  customTypeLabel?: string | null;
+  school: { id: string; name?: string | null };
+  isPublic: boolean;
+  isPublished: boolean;
+  status: string;
+  startDate: string;
+  endDate?: string | null;
+  location?: string | null;
+  coverImage?: string | null;
+  updates: SocialPostUpdateItem[];
+  reactionCount: number;
+  viewerHasReacted: boolean;
+  isBoosted: boolean;
+  boostExpiresAt?: string | null;
+  voteSessions: SocialPostVoteSession[];
+  createdAt: string;
+}
+
+export interface FeedEntry {
+  kind: FeedEntryKind;
+  tier: number;
+  event?: { id: string; title: string; image?: string | null } | null;
+  post?: SocialPost | null;
+}
+
+export interface SocialPostFeedInput {
+  school: string;
+  tab?: FeedTab;
+  page?: number;
+  limit?: number;
+}
+
+export interface SocialPostFeedResult {
+  items: FeedEntry[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface WeeklyReportRecord {
   id: string;
   weekStart: string;
